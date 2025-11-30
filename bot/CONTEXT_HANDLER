@@ -21,27 +21,7 @@ if(context_id.equals("schedule"))
 		else
 		{
 			phone = answers.get("phone").get("text");
-			if(!answers.containsKey("company"))
-			{
-				question = {"name":"","replies":{"Thanks. Which company do you work for?"}};
-			}
-			else
-			{
-				company = answers.get("company").get("text");
-				if(!answers.containsKey("date"))
-				{
-					_date1 = zoho.currentdate.addDay(2);
-					_date2 = zoho.currentdate.addDay(3);
-					_date3 = zoho.currentdate.addDay(4);
-					slots = {"type":"date-timeslots","label":"Schedule","tz":false,"slots":{_date1.getDay() + "/" + _date1.getMonth() + "/" + _date1.getYear():{"11:30","14:00","15:30"},_date2.getDay() + "/" + _date2.getMonth() + "/" + _date2.getYear():{"11:30","14:00","15:30"},_date3.getDay() + "/" + _date3.getMonth() + "/" + _date3.getYear():{"11:30","14:00","15:30"}},"skippable":"true"};
-					question = {"name":"date","replies":{"pick a time slot as per your convenience"},"skippable":"true","input":slots};
-				}
-				else
-				{
-					date = answers.get("date");
-					if(!date.get("text").equalsIgnoreCase("-"))
-					{
-						meta = date.get("meta");
+        	meta = date.get("meta");
 						card_data = meta.get("card_data");
 						slot = card_data.get("value").get("slot");
 						formattedDate = slot.toList("/");
@@ -74,29 +54,9 @@ if(context_id.equals("schedule"))
 							question = {"name":"thanks","replies":{"Sorry, please try later"}};
 							response.put("questions",{question});
 							return response;
-						}
-						else
-						{
-							response.put("action","end");
-							response.put("replies",{"Have a nice day"});
-							return response;
-						}
-					}
-					else
-					{
-						response.put("action","end");
-						response.put("replies",{"Have a nice day"});
-						return response;
-					}
-				}
 			}
 		}
 	}
 	response.put("questions",{question});
-}
-else if(context_id.equals("nothing"))
-{
-	response.put("action","end");
-	response.put("replies",{""});
 }
 return response;
