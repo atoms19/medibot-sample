@@ -1,0 +1,102 @@
+/*
+			Note : Authenticate Google Calendar connection by clicking Manage Connection Link at the bottom of the page
+			*/
+response = Map();
+if(context_id.equals("schedule"))
+{
+	response.put("action","context");
+	response.put("context_id","schedule");
+	name = answers.get("name").get("text");
+	if(!answers.containsKey("email"))
+	{
+		question = {"name":"email","replies":{"enter your email address?"}};
+	}
+	else
+	{
+		email = answers.get("email").get("text");
+		if(!answers.containsKey("phone"))
+		{
+			question = {"name":"phone","replies":{"Can I have your contact number?"}};
+		}
+		else
+		{
+			phone = answers.get("phone").get("text");
+			if(!answers.containsKey("company"))
+			{
+				question = {"name":"","replies":{"Thanks. Which company do you work for?"}};
+			}
+			else
+			{
+				company = answers.get("company").get("text");
+				if(!answers.containsKey("date"))
+				{
+					_date1 = zoho.currentdate.addDay(2);
+					_date2 = zoho.currentdate.addDay(3);
+					_date3 = zoho.currentdate.addDay(4);
+					slots = {"type":"date-timeslots","label":"Schedule","tz":false,"slots":{_date1.getDay() + "/" + _date1.getMonth() + "/" + _date1.getYear():{"11:30","14:00","15:30"},_date2.getDay() + "/" + _date2.getMonth() + "/" + _date2.getYear():{"11:30","14:00","15:30"},_date3.getDay() + "/" + _date3.getMonth() + "/" + _date3.getYear():{"11:30","14:00","15:30"}},"skippable":"true"};
+					question = {"name":"date","replies":{"pick a time slot as per your convenience"},"skippable":"true","input":slots};
+				}
+				else
+				{
+					date = answers.get("date");
+					if(!date.get("text").equalsIgnoreCase("-"))
+					{
+						meta = date.get("meta");
+						card_data = meta.get("card_data");
+						slot = card_data.get("value").get("slot");
+						formattedDate = slot.toList("/");
+						slot = formattedDate.get(1) + "/" + formattedDate.get(0) + "/" + formattedDate.get(2);
+						value = slot.toDateTime();
+						if(!answers.containsKey("thanks"))
+						{
+							/* Add  event to google calendar */
+							_date = value.getYear().toString() + "-" + value.getMonth().toString() + "-" + value.getDay().toString() + "T" + value.getHour().toString() + ":" + value.getMinutes().toString() + ":" + value.getSeconds().toString();
+							paramMap = {"start":{"dateTime":_date,"timeZone":"Asia/Kolkata"},"end":{"dateTime":_date,"timeZone":"Asia/Kolkata"},'summary':'Call with ' + name + '. Contact Number : ' + phone};
+							apiresponse = invokeurl
+							[
+								url :"https://www.googleapis.com/calendar/v3/calendars/primary/events"
+								type :POST
+								parameters:paramMap.toString()
+								headers:{'Content-type':'application/json;'}
+								connection:"google_calendar"
+							];
+							info apiresponse;
+							if(apiresponse.containsKey("status"))
+							{
+								status = apiresponse.get("status");
+								if("confirmed".equalsIgnoreCase(status))
+								{
+									question = {"name":"thanks","replies":{"Thank you.","Your appointment has been scheduled with our Sales rep on " + slot}};
+									response.put("questions",{question});
+									return response;
+								}
+							}
+							question = {"name":"thanks","replies":{"Sorry, please try later"}};
+							response.put("questions",{question});
+							return response;
+						}
+						else
+						{
+							response.put("action","end");
+							response.put("replies",{"Have a nice day"});
+							return response;
+						}
+					}
+					else
+					{
+						response.put("action","end");
+						response.put("replies",{"Have a nice day"});
+						return response;
+					}
+				}
+			}
+		}
+	}
+	response.put("questions",{question});
+}
+else if(context_id.equals("nothing"))
+{
+	response.put("action","end");
+	response.put("replies",{""});
+}
+return response;

@@ -28,6 +28,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+		  <script id="zsiqscript" src="https://salesiq.zohopublic.com/widget?wc=siqfd7d118c69f2cd304cfc5eb334389f492ca47d254d8a2f1c9fc5e84cdaebb917" defer></script>
       </body>
     </html>
   );

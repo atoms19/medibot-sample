@@ -1,0 +1,5 @@
+response = Map();
+response.put("action","reply");
+response.put("replies",{"hello there , How can i Help you?"});
+response.put("suggestions",{"I would like to Schedule and appointment","I have queries regarding my scheduled appointment", "I want to speak to the doctor"});
+return response;

@@ -1,0 +1,36 @@
+response = Map();
+msg = message.get("text");
+if(operation.equals("chat"))
+{
+	if(!msg.equalsIgnoreCase("I would like to schedule") && !msg.equalsIgnoreCase("No, Thanks!"))
+	{
+		response.put("action","reply");
+		response.put("replies",{"Would you like to learn more about how we can help you grow your business?","We will be happy to schedule a call"});
+		response.put("suggestions",{"I would like to schedule","No, Thanks!"});
+		return response;
+	}
+}
+if(!msg.isNull())
+{
+	if(msg.equalsIgnoreCase("I want to schedule an appointment"))
+	{
+		response.put("action","context");
+		response.put("context_id","schedule");
+		question = {"name":"name","replies":{"Great! I just need a few details to schedule your appointment","for Scheduling your appointment can you provide us with some details","what's your name?"}};
+		response.put("questions",{question});
+  
+	else if(msg.equalsIgnoreCase("I want to reschedule my scheduled appointment"))
+	{
+		response.put("action","context");
+		response.put("context_id","reschedule");
+		question = {"name":"end","replies":{"ok lets reschedule your appointment"}};
+		response.put("questions",{question});
+	}
+	else
+	{
+		response.put("action","reply");
+		response.put("replies",{"",""});
+		response.put("suggestions",{"",""});
+	}
+}
+return response;
